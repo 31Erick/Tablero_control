@@ -1,2 +1,2 @@
-# Datos de cantones de Costa Rica
-Tablero de control de datos de cantones de Costa Rica, desarrollado con [flexdashboard](https://pkgs.rstudio.com/flexdashboard/).
+# Datos Policiales 
+Tablero de control de datos de policiales de Costa Rica, desarrollado con [flexdashboard](https://pkgs.rstudio.com/flexdashboard/).
