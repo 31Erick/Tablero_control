@@ -1,46 +1,72 @@
 ---
-title: "Tablas_graficos_conjunto_datos_policial"
-author: "Erick Ruiz"
-date: '2022-06-14'
-output:
-  html_document:
-    code_folding: hide
-    theme: readable
-    toc: true
-    toc_depth: 5
-    toc_float:
-      collapsed: false
-      smooth_scroll: false
+title: "Datos de Policiales de Costa Rica - flexdashboard y Shiny"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    theme:
+      version: 3
+      bootswatch: cosmo
+runtime: shiny  
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+library(flexdashboard)
 ```
 
-# Introducion 
-
-Este sitio web muestra visualizaciones de registros de delitos en Costa Rica en forma de tablas y gráficos.
-
-```{r carga_paquetes, message=FALSE}
-library(dplyr) 
-library(ggplot2) 
+```{r paquetes, message= FALSE}
 library(ggthemes) 
 library(plotly) 
 library(kableExtra) 
 library(DT) 
 library(lubridate)
+library(dplyr)
+library(sf)
+library(ggplot2)
+library(leaflet)
+library(shiny)
+library(lubridate)
 ```
 
-```{r carga_datos, message=FALSE}
-Datos_policiales <-
-readxl::read_excel("C:/Users/erick.ruiz/Documents/RStudio/Tablas_graficos_conjunto_datos_policial/estadisticaspoliciales2021.xls", 
-   col_names = TRUE,
- .name_repair = "unique")
+```{r lectura-datos-cantones}
+
+
+cantones <-
+  st_read(dsn = "cantones_simplificados.geojson", quiet = TRUE) %>%
+  st_transform(4326)
 ```
+
+```{r lectura-datos-policiales}
+
+
+Datos_policiales <-
+  readxl::read_xls( "estadisticaspoliciales2021.xls", 
+  col_names = TRUE,
+ .name_repair = "unique")
+ 
+```
+
+
+```{r lista-cantones}
+lista_cantones <- unique(cantones$canton)
+lista_cantones <- sort(lista_cantones)
+lista_cantones <- c("Todos", lista_cantones)
+```
+
+
+ {data-height=10}
+-----------------------------------------------------------------------
+
+### **Fuente de los datos: [Instituto Geográfico Nacional (IGN)](http://geos.snitcr.go.cr/be/IGN_5/wfs) y [Organismo de Investigación Judicial(OIJ)](https://sitiooij.poder-judicial.go.cr/index.php/ayuda/servicios-policiales/servicios-a-organizaciones/indice-de-transparencia-del-sector-publico-costarricense/datos-abiertos)  **
+
+{data-height=590}
+-----------------------------------------------------------------------
 
 # Tabla 
 
 ```{r Tabla, message=FALSE}
+renderDT({
+  Datos_policiales <-
+  
 Datos_policiales %>%
   dplyr::select("Delito","Fecha","Victima","Edad","Genero","Provincia","Canton") %>%
   datatable(
@@ -58,70 +84,24 @@ Datos_policiales %>%
       "Género",
       "Provincia",
       "Cantón"
-    )
-  )
+    ))
+})
 ```
 
-# Gráfico Cantidad de delitos Por tipo
+ {data-height=400}
+-----------------------------------------------------------------------
+```{r grafico_1_delitos}
 
-```{r Grafico_cantidad_delito_tipo, message=FALSE}
-grafico_cantidad_delitos <-
-  Datos_policiales %>%
-  count(Delito) %>% 
-  ggplot(aes(x = reorder(Delito, n), y = n)) +
-  geom_bar(stat = "identity") +
-  xlab("Tipo de delito") +
-  ylab("Cantidad") +
-  coord_flip() + 
-  theme_hc() 
-
-
-grafico_cantidad_delitos %>%
-  ggplotly() %>% 
-  config(locale = 'es')
-```
-
-# Gráfico de cantidad de delitos por mes 
-```{r}
-
-```
-
-
-# Gráfico de cantidad de delitos por genero
-
-```{r Grafico_cantidad_delitos_genero}
-grafico_cantidad_delitos_genero <-
-  Datos_policiales %>%
-  ggplot(aes(x = Delito, fill = Genero)) +
-  geom_bar(position = "fill") +
-  xlab("Tipo de delito") +
-  ylab("Cantidad") +
-  labs(fill = "Género") +
-  coord_flip() +
-  theme_minimal()
-
-ggplotly(grafico_cantidad_delitos_genero) %>% config(locale = 'es')
   
-
-
-```
-
-# Gráfico  de la cantidad de delitos cantones de San José, Alajuela, Cartago Y Heredia.
-
-```{r Grafico_cantidad_delito_tipo, message=FALSE}
-grafico_cantidad_delitos_cantones <-
-  Datos_policiales %>%
-  filter(Canton == "SAN JOSE" | Canton == "ALAJUELA" | Canton == "CARTAGO"|Canton == "HEREDIA") %>%
-  
-  ggplot(aes(x = Canton, y = Delito)) +
+grafico_ggplot2_1_delitos <-
+  distritos %>%
+  st_drop_geometry() %>%
+  slice_max(area, n = 20) %>%
+  ggplot(aes(x = reorder(distrito, -area), y = area)) +
   geom_bar(stat = "identity") +
-  ggtitle("Cantidad de casos positivos de covid-19 por cantón") +
   xlab("Cantón") +
-  ylab("Cantidad") +
-  
-  theme_minimal()
+  ylab("Área (km2)")
 
-ggplotly(grafico_cantidad_delitos_cantones) %>% config(locale = 'es')
-  
+ggplotly(grafico_ggplot2_1_delitos)
 
-```
+})
