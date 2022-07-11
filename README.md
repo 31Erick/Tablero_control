@@ -1,2 +1,2 @@
-# Tablero_control
-Las tablas, gráficos y mapas de conjunto de datos estadísticas policiales
+# Tablas_graficos_conjunto_datos_policial
+Tablas y gráficos del conjuntos  datos policial 

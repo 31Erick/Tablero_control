@@ -1,0 +1,127 @@
+---
+title: "Tablas_graficos_conjunto_datos_policial"
+author: "Erick Ruiz"
+date: '2022-06-14'
+output:
+  html_document:
+    code_folding: hide
+    theme: readable
+    toc: true
+    toc_depth: 5
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introducion 
+
+Este sitio web muestra visualizaciones de registros de delitos en Costa Rica en forma de tablas y gráficos.
+
+```{r carga_paquetes, message=FALSE}
+library(dplyr) 
+library(ggplot2) 
+library(ggthemes) 
+library(plotly) 
+library(kableExtra) 
+library(DT) 
+library(lubridate)
+```
+
+```{r carga_datos, message=FALSE}
+Datos_policiales <-
+readxl::read_excel("C:/Users/erick.ruiz/Documents/RStudio/Tablas_graficos_conjunto_datos_policial/estadisticaspoliciales2021.xls", 
+   col_names = TRUE,
+ .name_repair = "unique")
+```
+
+# Tabla 
+
+```{r Tabla, message=FALSE}
+Datos_policiales %>%
+  dplyr::select("Delito","Fecha","Victima","Edad","Genero","Provincia","Canton") %>%
+  datatable(
+    options = list(
+      pageLength = 5,
+    
+      language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json') 
+    ),
+    colnames = c(
+      
+      "Delitos",
+      "Fecha",
+      "Víctima",
+      "Edad",
+      "Género",
+      "Provincia",
+      "Cantón"
+    )
+  )
+```
+
+# Gráfico Cantidad de delitos Por tipo
+
+```{r Grafico_cantidad_delito_tipo, message=FALSE}
+grafico_cantidad_delitos <-
+  Datos_policiales %>%
+  count(Delito) %>% 
+  ggplot(aes(x = reorder(Delito, n), y = n)) +
+  geom_bar(stat = "identity") +
+  xlab("Tipo de delito") +
+  ylab("Cantidad") +
+  coord_flip() + 
+  theme_hc() 
+
+
+grafico_cantidad_delitos %>%
+  ggplotly() %>% 
+  config(locale = 'es')
+```
+
+# Gráfico de cantidad de delitos por mes 
+```{r}
+
+```
+
+
+# Gráfico de cantidad de delitos por genero
+
+```{r Grafico_cantidad_delitos_genero}
+grafico_cantidad_delitos_genero <-
+  Datos_policiales %>%
+  ggplot(aes(x = Delito, fill = Genero)) +
+  geom_bar(position = "fill") +
+  xlab("Tipo de delito") +
+  ylab("Cantidad") +
+  labs(fill = "Género") +
+  coord_flip() +
+  theme_minimal()
+
+ggplotly(grafico_cantidad_delitos_genero) %>% config(locale = 'es')
+  
+
+
+```
+
+# Gráfico  de la cantidad de delitos cantones de San José, Alajuela, Cartago Y Heredia.
+
+```{r Grafico_cantidad_delito_tipo, message=FALSE}
+grafico_cantidad_delitos_cantones <-
+  Datos_policiales %>%
+  filter(Canton == "SAN JOSE" | Canton == "ALAJUELA" | Canton == "CARTAGO"|Canton == "HEREDIA") %>%
+  
+  ggplot(aes(x = Canton, y = Delito)) +
+  geom_bar(stat = "identity") +
+  ggtitle("Cantidad de casos positivos de covid-19 por cantón") +
+  xlab("Cantón") +
+  ylab("Cantidad") +
+  
+  theme_minimal()
+
+ggplotly(grafico_cantidad_delitos_cantones) %>% config(locale = 'es')
+  
+
+```
