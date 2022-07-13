@@ -117,8 +117,6 @@ cantones_delitos <-
 
 Row {data-height=590}
 -----------------------------------------------------------------------
-
-
 ```{r mapa, message = FALSE}
 # Mapa
 colores_cantones_delitos <-
@@ -169,10 +167,11 @@ leaflet() %>%
 ```
 
 
-
+Row {data-height=500}
+-----------------------------------------------------------------------
 ```{r Tabla, message=FALSE }
-renderDT({
-  Datos_policiales <-
+
+
   
 Datos_policiales %>%
   dplyr::select("Delito","Fecha","Victima","Edad","Genero","Provincia","Canton") %>%
@@ -192,7 +191,7 @@ Datos_policiales %>%
       "Provincia",
       "Cantón"
     ))
-})
+
 ```
 
 Row {data-height=400}
