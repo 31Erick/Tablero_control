@@ -1,5 +1,5 @@
 ---
-title: "Datos de Policiales de Costa Rica - flexdashboard y Shiny"
+title: "Datos de Policiales de Costa Rica 
 author: "Erick Ruiz"
 date: '2022-07-08'
 output: 
@@ -194,8 +194,6 @@ Datos_policiales %>%
 })
 ```
 
-Row {data-height=400}
------------------------------------------------------------------------
 
 ```{r Grafico_cantidad_delito_1, message=FALSE}
 grafico_cantidad_delitos_1 <-
