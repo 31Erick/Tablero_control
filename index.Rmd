@@ -3,12 +3,13 @@ title: "Datos de Policiales de Costa Rica - flexdashboard y Shiny"
 author: "Erick Ruiz"
 date: '2022-07-08'
 output: 
+ 
   flexdashboard::flex_dashboard:
     orientation: rows
     theme:
       version: 3
       bootswatch: cosmo
-runtime: shiny  
+runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
